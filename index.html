@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Type play</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parametric Real-time Strata Brush</title>
+    <style>
+        body {
+            margin: 0;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #c0c0c0;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow: hidden;
+        }
+        #sidebar {
+            width: 320px; 
+            background: #e8e8e8;
+            border-right: 1px solid #d0d0d0;
+            padding: 0;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            overflow-y: auto;
+            font-size: 13px; 
+            z-index: 10;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+            flex-direction: column;
+        }
+        .section-title {
+            background-color: #ffffff;
+            padding: 8px 10px;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+        .section-title.with-action {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+        .section-title.with-action label {
+            font-size: 12px;
+            font-weight: normal;
+            display: -webkit-inline-box;
+            display: -webkit-inline-flex;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            cursor: pointer;
+            color: #333;
+        }
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 1px solid #999;
+            background-color: #fff;
+            margin-left: 6px;
+            cursor: pointer;
+            border-radius: 0;
+            display: -webkit-inline-box;
+            display: -webkit-inline-flex;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #666666;
+            border-color: #666666;
+        }
+        input[type="checkbox"]:checked::after {
+            content: '';
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+            margin-top: -2px;
+        }
+        .row {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            padding: 2px 10px;
+            margin-bottom: 5px;
+        }
+        .row label {
+            width: 70px; 
+            font-weight: 500;
+            color: #333;
+            font-size: 12px;
+        }
+        .row input[type="range"] {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            margin: 0 10px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            height: 10px; 
+            background: transparent; 
+            outline: none;
+            cursor: pointer;
+        }
+        .row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%;
+            background: #666666; 
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .row input[type="range"]::-moz-range-thumb {
+            width: 10px; 
+            height: 10px;
+            border-radius: 50%;
+            background: #666666; 
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .row .val-disp {
+            width: 35px;
+            text-align: right;
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+        .palette-grid {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-flex-wrap: wrap;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            padding: 0 5px;
+            margin-bottom: 5px;
+        }
+        .palette-item {
+            width: 50%;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            padding: 2px 5px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            margin-bottom: 5px;
+        }
+        .palette-item label {
+            width: 48px;
+            font-weight: 500;
+            color: #333;
+            font-size: 12px;
+        }
+        .palette-field {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            background: #ffffff;
+            border: 1px solid #d0d0d0;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            height: 24px;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            padding-left: 2px;
+            min-width: 0; 
+        }
+        .palette-field input[type="color"] {
+            width: 20px;
+            height: 20px;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            background: transparent;
+            flex-shrink: 0;
+        }
+        .palette-field input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        .palette-field input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 0;
+        }
+        .palette-field input[type="text"] {
+            border: none;
+            outline: none;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            padding-left: 6px;
+            font-family: inherit;
+            font-size: 12px;
+            color: #333;
+            font-weight: normal; 
+            min-width: 0;
+        }
+        .preset-gallery {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-flex-wrap: wrap;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            padding: 8px 10px;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .preset-thumb {
+            width: 40px;
+            height: 40px;
+            box-shadow: inset 0 0 0 1px transparent;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            -webkit-transition: box-shadow 0.15s ease;
+            transition: box-shadow 0.15s ease;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            margin-bottom: 4px;
+        }
+        .preset-thumb:hover {
+            box-shadow: inset 0 0 0 1px #999999;
+        }
+        .btn-group {
+            padding: 10px;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+            flex-direction: column;
+        }
+        .btn-group button {
+            width: 100%;
+            padding: 8px;
+            background: #d8d8d8;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-weight: normal; 
+            font-family: inherit;
+            font-size: 12px;
+            -webkit-transition: 0.1s;
+            transition: 0.1s;
+            letter-spacing: 0.5px;
+            border-radius: 0;
+            margin-bottom: 4px;
+        }
+        .btn-group button:last-child {
+            margin-bottom: 0;
+        }
+        .btn-group button:hover { background: #c0c0c0; }
+        .export-row {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+        .export-row button {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+        }
+        .export-row button:not(:first-child) {
+            margin-left: 4px;
+        }
+        .footer-text {
+            text-align: center;
+            padding: 20px 10px 15px;
+            color: #888;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            margin-top: auto; 
+        }
+        #workspace {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            position: relative;
+            background: #ffffff;
+            cursor: default; 
+            overflow: hidden;
+        }
+        #workspace.is-3-4 {
+            background: #c0c0c0;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+        }
+        #workspace.is-3-4 canvas {
+            background: transparent;
+        }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div class="section-title">Slicing Brush Tool</div>
+        <div class="row"><label>宽度</label><input type="range" id="p_tw" min="10" max="500" value="120"><div class="val-disp">120</div></div>
+        <div class="row"><label>高度</label><input type="range" id="p_th" min="10" max="500" value="180"><div class="val-disp">180</div></div>
+        <div class="row"><label>线宽下限</label><input type="range" id="p_line_min" min="1" max="100" value="1"><div class="val-disp">1</div></div>
+        <div class="row"><label>线宽上限</label><input type="range" id="p_line_max" min="1" max="200" value="100"><div class="val-disp">100</div></div>
+        <div class="row"><label>旋转</label><input type="range" id="p_rotate" min="0" max="360" value="0"><div class="val-disp">0</div></div>
+        <div class="row"><label>灰阶下限</label><input type="range" id="p_bw_min" min="0" max="255" value="114"><div class="val-disp">114</div></div>
+        <div class="row"><label>灰阶上限</label><input type="range" id="p_bw_max" min="0" max="255" value="233"><div class="val-disp">233</div></div>
+        <div class="row"><label>随机种子</label><input type="range" id="p_seed" min="1" max="1000" value="68"><div class="val-disp">68</div></div>
+        <div class="row"><label>步进</label><input type="range" id="p_step" min="1" max="200" value="30"><div class="val-disp">30</div></div>
+
+        <div class="section-title with-action">
+            <span>抖动 Dither</span>
+            <label>抖动开关 <input type="checkbox" id="p_dithering" checked></label>
+        </div>
+        <div class="row"><label>像素大小</label><input type="range" id="p_pixel_size" min="1" max="20" step="1" value="3"><div class="val-disp">3</div></div>
+
+        <div class="section-title">色板 Palette</div>
+        <div class="palette-grid">
+            <div class="palette-item">
+                <label>bg</label>
+                <div class="palette-field"><input type="color" id="c_bg" value="#ffffff"><input type="text" id="t_bg" value="#ffffff"></div>
+            </div>
+            <div class="palette-item">
+                <label>color 1</label>
+                <div class="palette-field"><input type="color" id="c_1" value="#ffffff"><input type="text" id="t_1" value="#ffffff"></div>
+            </div>
+            <div class="palette-item">
+                <label>color 2</label>
+                <div class="palette-field"><input type="color" id="c_2" value="#ffffff"><input type="text" id="t_2" value="#ffffff"></div>
+            </div>
+            <div class="palette-item">
+                <label>color 3</label>
+                <div class="palette-field"><input type="color" id="c_3" value="#3b8e53"><input type="text" id="t_3" value="#3b8e53"></div>
+            </div>
+            <div class="palette-item">
+                <label>color 4</label>
+                <div class="palette-field"><input type="color" id="c_4" value="#9a9db5"><input type="text" id="t_4" value="#9a9db5"></div>
+            </div>
+            <div class="palette-item">
+                <label>color 5</label>
+                <div class="palette-field"><input type="color" id="c_5" value="#fdf4ac"><input type="text" id="t_5" value="#fdf4ac"></div>
+            </div>
+        </div>
+
+        <div class="section-title">样式预设 Presets</div>
+        <div class="preset-gallery" id="preset_gallery">
+        </div>
+
+        <div class="btn-group">
+            <div class="export-row">
+                <button id="btn_undo" title="快捷键: Ctrl + Z">返回上一步</button>
+                <button id="btn_clear">清空画布</button>
+            </div>
+            <button id="btn_ratio">3:4 画布模式</button>
+            <button id="btn_another">随机图形色彩</button>
+        </div>
+
+        <div class="section-title">导出 Export</div>
+        <div class="btn-group">
+            <div class="export-row">
+                <button id="btn_export_jpg">JPG</button>
+                <button id="btn_export_png">PNG</button>
+                <button id="btn_export_svg">SVG</button>
+            </div>
+        </div>
+        
+        <div class="footer-text">2026 ©Design by Type Play Studio</div>
+    </div>
+
+    <div id="workspace">
+        <canvas id="mainCanvas"></canvas>
+    </div>
+
+    <script>
+        // Polyfill for canvas.toBlob for older browsers
+        if (!HTMLCanvasElement.prototype.toBlob) {
+            Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+                value: function (callback, type, quality) {
+                    var dataURL = this.toDataURL(type, quality).split(',')[1];
+                    setTimeout(function() {
+                        var binStr = atob(dataURL),
+                            len = binStr.length,
+                            arr = new Uint8Array(len);
+                        for (var i = 0; i < len; i++) {
+                            arr[i] = binStr.charCodeAt(i);
+                        }
+                        callback(new Blob([arr], {type: type || 'image/png'}));
+                    });
+                }
+            });
+        }
+
+        function updateSliderTrack(el) {
+            var min = parseFloat(el.min) || 0;
+            var max = parseFloat(el.max) || 100;
+            var val = parseFloat(el.value);
+            var percent = ((val - min) / (max - min)) * 100;
+            
+            el.style.backgroundImage = 'linear-gradient(to right, #666666 ' + percent + '%, #ffffff ' + percent + '%)';
+            el.style.backgroundSize = '100% 2px';
+            el.style.backgroundPosition = 'center';
+            el.style.backgroundRepeat = 'no-repeat';
+        }
+
+        var canvas = document.getElementById('mainCanvas');
+        // 主画布开启Alpha通道，以便能够铺排无背景色的像素
+        var ctx = canvas.getContext('2d', { alpha: true });
+        
+        // 核心用于承载100%透明的独立后台画布，记录所有的绘制笔画状态，避免背景色干扰导出
+        var strokeLayer = document.createElement('canvas');
+        var strokeCtx = strokeLayer.getContext('2d', { alpha: true });
+
+        var workspace = document.getElementById('workspace');
+
+        var strokes = []; 
+        var currentStroke = null; 
+        var tileCanvas = null; 
+        var isDrawing = false;
+        var is34Ratio = false; 
+
+        var ranges = ['tw', 'th', 'line_min', 'line_max', 'rotate', 'bw_min', 'bw_max', 'seed', 'step', 'pixel_size'];
+        ranges.forEach(function(id) {
+            var inputEl = document.getElementById('p_' + id);
+            inputEl.addEventListener('input', function(e) {
+                var val = e.target.value;
+                e.target.nextElementSibling.textContent = val;
+                
+                updateSliderTrack(e.target); 
+                
+                var numVal = parseFloat(val);
+                strokes.forEach(function(stroke) {
+                    if (id === 'step') {
+                        stroke.stepSize = Math.max(1, numVal);
+                    } else if (id === 'pixel_size') {
+                        stroke.params.pixelSize = Math.max(1, numVal);
+                        if (stroke.type === 'draw') stroke.tile = createTile(stroke.params, stroke.colors);
+                    } else {
+                        stroke.params[id] = numVal;
+                        if (stroke.type === 'draw') stroke.tile = createTile(stroke.params, stroke.colors);
+                    }
+                });
+                
+                generateTileAndRedraw(); 
+            });
+            updateSliderTrack(inputEl);
+        });
+
+        document.getElementById('p_dithering').addEventListener('change', function(e) {
+            var checked = e.target.checked;
+            strokes.forEach(function(stroke) {
+                stroke.params.dithering = checked;
+                if (stroke.type === 'draw') {
+                    stroke.tile = createTile(stroke.params, stroke.colors);
+                }
+            });
+            generateTileAndRedraw();
+        });
+
+        function updateAllStrokesWithUIColors() {
+            var newColors = getGlobalColors();
+            strokes.forEach(function(stroke) {
+                if (stroke.type === 'draw') {
+                    stroke.colors.c_3 = newColors.c_3;
+                    stroke.colors.c_4 = newColors.c_4;
+                    stroke.colors.c_5 = newColors.c_5;
+                    stroke.tile = createTile(stroke.params, stroke.colors);
+                }
+            });
+            generateTileAndRedraw();
+        }
+
+        var colors = ['bg', '1', '2', '3', '4', '5'];
+        colors.forEach(function(id) {
+            var cInput = document.getElementById('c_' + id);
+            var tInput = document.getElementById('t_' + id);
+            
+            cInput.addEventListener('input', function(e) {
+                tInput.value = e.target.value;
+                updateAllStrokesWithUIColors();
+            });
+            
+            tInput.addEventListener('input', function(e) {
+                var val = e.target.value.trim();
+                if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(val)) {
+                    if (val.length === 4) { 
+                        val = '#' + val[1]+val[1] + val[2]+val[2] + val[3]+val[3];
+                    }
+                    cInput.value = val;
+                    updateAllStrokesWithUIColors();
+                }
+            });
+            
+            tInput.addEventListener('change', function(e) {
+                var val = e.target.value.trim();
+                if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(val)) {
+                    if (val.length === 4) {
+                        val = '#' + val[1]+val[1] + val[2]+val[2] + val[3]+val[3];
+                    }
+                    cInput.value = val;
+                    e.target.value = val;
+                    updateAllStrokesWithUIColors();
+                } else {
+                    e.target.value = cInput.value;
+                }
+            });
+        });
+
+        var bayer = [
+            [ 0,  8,  2, 10],
+            [12,  4, 14,  6],
+            [ 3, 11,  1,  9],
+            [15,  7, 13,  5]
+        ];
+
+        function hexToRgb(hex) {
+            var num = parseInt(hex.slice(1), 16);
+            return [ (num >> 16) & 255, (num >> 8) & 255, num & 255 ];
+        }
+
+        document.getElementById('btn_ratio').addEventListener('click', function(e) {
+            is34Ratio = !is34Ratio;
+            if (is34Ratio) {
+                workspace.classList.add('is-3-4');
+                e.target.textContent = '全屏画布模式';
+            } else {
+                workspace.classList.remove('is-3-4');
+                e.target.textContent = '3:4 画布模式';
+            }
+            resizeCanvas();
+        });
+
+        function resizeCanvas() {
+            var targetW, targetH;
+            if (is34Ratio) {
+                var pW = workspace.clientWidth - 40; 
+                var pH = workspace.clientHeight - 40;
+                
+                targetW = pW;
+                targetH = pW * 4 / 3;
+                
+                if (targetH > pH) {
+                    targetH = pH;
+                    targetW = pH * 3 / 4;
+                }
+                
+                targetW = Math.floor(targetW);
+                targetH = Math.floor(targetH);
+
+                canvas.style.width = targetW + 'px';
+                canvas.style.height = targetH + 'px';
+            } else {
+                canvas.style.width = '';
+                canvas.style.height = '';
+                targetW = workspace.clientWidth;
+                targetH = workspace.clientHeight;
+            }
+            
+            // 确保同步调整主屏幕与后台透明层的尺寸
+            canvas.width = targetW;
+            canvas.height = targetH;
+            strokeLayer.width = targetW;
+            strokeLayer.height = targetH;
+
+            redrawAll();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function getGlobalParams() {
+            return {
+                tw: parseInt(document.getElementById('p_tw').value),
+                th: parseInt(document.getElementById('p_th').value),
+                pixelSize: parseInt(document.getElementById('p_pixel_size').value),
+                line_min: parseInt(document.getElementById('p_line_min').value),
+                line_max: parseInt(document.getElementById('p_line_max').value),
+                rotate: parseInt(document.getElementById('p_rotate').value),
+                bw_min: parseInt(document.getElementById('p_bw_min').value),
+                bw_max: parseInt(document.getElementById('p_bw_max').value),
+                seed: parseInt(document.getElementById('p_seed').value),
+                dithering: document.getElementById('p_dithering').checked
+            };
+        }
+
+        function getGlobalColors() {
+            return {
+                c_3: document.getElementById('c_3').value,
+                c_4: document.getElementById('c_4').value,
+                c_5: document.getElementById('c_5').value
+            };
+        }
+
+        function lerpColor(c1, c2, t) {
+            return [
+                c1[0] + (c2[0] - c1[0]) * t,
+                c1[1] + (c2[1] - c1[1]) * t,
+                c1[2] + (c2[2] - c1[2]) * t
+            ];
+        }
+
+        // ==================== 核心图形生成系统 ====================
+        function createTile(params, colorsObj) {
+            var isDither = params.dithering;
+            
+            var tileC = document.createElement('canvas');
+            tileC.width = params.tw;
+            tileC.height = params.th;
+            var finalCtx = tileC.getContext('2d');
+
+            var cG = hexToRgb(colorsObj.c_3);
+            var cGr = hexToRgb(colorsObj.c_4);
+            var cY = hexToRgb(colorsObj.c_5);
+
+            var seedOffset = (params.seed - 1) / 999.0;
+            var lineMinRatio = (params.line_min - 1) / 99.0; 
+            
+            var T1 = 0.20 + lineMinRatio * 0.40;
+            var T2 = Math.min(T1 + 0.55, 0.95);
+            var T3 = Math.min(T2 + 0.06, 0.99);
+
+            var bwMinRatio = params.bw_min / 255.0;
+            var bwMaxRatio = params.bw_max / 255.0;
+            if (bwMaxRatio <= bwMinRatio) bwMaxRatio = bwMinRatio + 0.001; 
+
+            var baseMin = 114.0 / 255.0;
+            var baseMax = 233.0 / 255.0;
+
+            var renderW = isDither ? Math.ceil(params.tw / params.pixelSize) : params.tw;
+            var renderH = isDither ? Math.ceil(params.th / params.pixelSize) : params.th;
+
+            var workCanvas = document.createElement('canvas');
+            workCanvas.width = renderW; 
+            workCanvas.height = renderH;
+            var workCtx = workCanvas.getContext('2d');
+
+            var imgData = workCtx.createImageData(renderW, renderH);
+            var data = imgData.data;
+
+            var period = Math.max(1, params.line_max / params.pixelSize); 
+            var ditherSpread = isDither ? 0.25 : 0;
+            var rad = params.rotate * Math.PI / 180;
+            var cosT = Math.cos(rad);
+            var sinT = Math.sin(rad);
+
+            for(var y = 0; y < renderH; y++) {
+                for(var x = 0; x < renderW; x++) {
+                    var pIdx = (y * renderW + x) * 4;
+                    var mathX = isDither ? x : x / params.pixelSize;
+                    var mathY = isDither ? y : y / params.pixelSize;
+                    var d = mathX * sinT + mathY * cosT;
+                    
+                    var phase = ((d % period) + period) % period / period;
+                    phase = (phase + seedOffset) % 1.0;
+
+                    phase = (phase * (baseMax - baseMin) + baseMin - bwMinRatio) / (bwMaxRatio - bwMinRatio);
+                    phase = Math.max(0, Math.min(1, phase));
+
+                    if (!isDither) {
+                        var AA_W = 0.75 / period / params.pixelSize; 
+                        AA_W = Math.min(AA_W, 0.04); 
+                        
+                        var r, g, b;
+                        if (phase < T1 - AA_W) { 
+                            r = cG[0]; g = cG[1]; b = cG[2]; 
+                        } else if (phase < T1 + AA_W) {
+                            var t1 = (phase - (T1 - AA_W)) / (AA_W * 2);
+                            var c1_lerp = lerpColor(cG, cGr, t1);
+                            r=c1_lerp[0]; g=c1_lerp[1]; b=c1_lerp[2];
+                        } else if (phase < T2 - AA_W) { 
+                            r = cGr[0]; g = cGr[1]; b = cGr[2]; 
+                        } else if (phase < T2 + AA_W) {
+                            var t2 = (phase - (T2 - AA_W)) / (AA_W * 2);
+                            var c2_lerp = lerpColor(cGr, cY, t2);
+                            r=c2_lerp[0]; g=c2_lerp[1]; b=c2_lerp[2];
+                        } else if (phase < T3 - AA_W) { 
+                            r = cY[0]; g = cY[1]; b = cY[2]; 
+                        } else if (phase < T3 + AA_W) {
+                            var t3 = (phase - (T3 - AA_W)) / (AA_W * 2);
+                            var c3_lerp = lerpColor(cY, cG, t3);
+                            r=c3_lerp[0]; g=c3_lerp[1]; b=c3_lerp[2];
+                        } else { 
+                            r = cG[0]; g = cG[1]; b = cG[2];
+                        }
+                        
+                        data[pIdx] = r; data[pIdx+1] = g; data[pIdx+2] = b;
+                    } else {
+                        var ditherVal = (bayer[y % 4][x % 4] / 16.0) - 0.5;
+                        var finalPhase = phase + (ditherVal * ditherSpread);
+                        
+                        if (finalPhase < 0) finalPhase += 1;
+                        if (finalPhase >= 1) finalPhase -= 1;
+
+                        var col = cG;
+                        if (finalPhase < T1) col = cG;       
+                        else if (finalPhase < T2) col = cGr; 
+                        else if (finalPhase < T3) col = cY;  
+                        else col = cG;                         
+
+                        data[pIdx] = col[0]; data[pIdx+1] = col[1]; data[pIdx+2] = col[2];
+                    }
+                    data[pIdx+3] = 255; 
+                }
+            }
+            workCtx.putImageData(imgData, 0, 0);
+
+            finalCtx.imageSmoothingEnabled = !isDither; 
+            finalCtx.webkitImageSmoothingEnabled = !isDither;
+            finalCtx.mozImageSmoothingEnabled = !isDither;
+            finalCtx.msImageSmoothingEnabled = !isDither;
+            finalCtx.drawImage(workCanvas, 0, 0, params.tw, params.th);
+
+            return tileC;
+        }
+
+        function generateTileAndRedraw() {
+            tileCanvas = createTile(getGlobalParams(), getGlobalColors());
+            redrawAll();
+        }
+
+        function getStampedPoints(path, stepSize) {
+            if (path.length === 0) return [];
+            var stamps = [path[0]];
+            var distSinceLast = 0;
+
+            for (var i = 1; i < path.length; i++) {
+                var p0 = path[i-1];
+                var p1 = path[i];
+                var dx = p1.x - p0.x;
+                var dy = p1.y - p0.y;
+                var segmentLen = Math.sqrt(dx * dx + dy * dy); 
+                
+                var distToTravel = segmentLen;
+                var currentPos = {x: p0.x, y: p0.y};
+                if(segmentLen === 0) continue; 
+                var dirX = dx / segmentLen;
+                var dirY = dy / segmentLen;
+
+                while (distSinceLast + distToTravel >= stepSize) {
+                    var move = stepSize - distSinceLast;
+                    currentPos.x += dirX * move;
+                    currentPos.y += dirY * move;
+                    stamps.push({x: currentPos.x, y: currentPos.y});
+                    distToTravel -= move;
+                    distSinceLast = 0;
+                }
+                distSinceLast += distToTravel;
+            }
+            return stamps;
+        }
+
+        function drawStroke(stroke, targetCtx) {
+            var s_stepSize = stroke.stepSize;
+            var s_tw = stroke.params.tw;
+            var s_th = stroke.params.th;
+            var s_tile = stroke.tile;
+
+            var pointsToDraw = getStampedPoints(stroke.path, s_stepSize);
+            pointsToDraw.forEach(function(pt) {
+                var drawX = Math.floor(pt.x - s_tw/2);
+                var drawY = Math.floor(pt.y - s_th/2);
+
+                if (stroke.type === 'erase') {
+                    // 支持后台透明层的真正像素抠除效果
+                    targetCtx.globalCompositeOperation = 'destination-out';
+                    targetCtx.fillStyle = '#000000';
+                    targetCtx.fillRect(drawX, drawY, s_tw, s_th);
+                    targetCtx.globalCompositeOperation = 'source-over';
+                } else {
+                    if (s_tile) {
+                        targetCtx.drawImage(s_tile, drawX, drawY);
+                    }
+                }
+            });
+        }
+
+        function redrawAll() {
+            var bgColor = document.getElementById('c_bg').value || "#ffffff";
+            
+            // 1. 将所有笔画真实状态画入【完全透明】的独立后台层
+            strokeCtx.clearRect(0, 0, strokeLayer.width, strokeLayer.height);
+            strokeCtx.imageSmoothingEnabled = false;
+            strokeCtx.webkitImageSmoothingEnabled = false;
+            strokeCtx.mozImageSmoothingEnabled = false;
+            strokeCtx.msImageSmoothingEnabled = false;
+
+            strokes.forEach(function(stroke) {
+                drawStroke(stroke, strokeCtx);
+            });
+            if (currentStroke && currentStroke.path.length > 0) {
+                drawStroke(currentStroke, strokeCtx);
+            }
+
+            // 2. 将用户可视的前台主屏幕铺满背景色，避免错乱
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.imageSmoothingEnabled = false;
+            ctx.webkitImageSmoothingEnabled = false;
+            ctx.mozImageSmoothingEnabled = false;
+            ctx.msImageSmoothingEnabled = false;
+
+            // 3. 把画好的后台层贴在背景之上，实现完全准确的肉眼预览！
+            ctx.drawImage(strokeLayer, 0, 0);
+        }
+
+        canvas.addEventListener('mousedown', function(e) {
+            isDrawing = true;
+            
+            var rect = canvas.getBoundingClientRect();
+            var offsetX = e.clientX - rect.left;
+            var offsetY = e.clientY - rect.top;
+
+            currentStroke = {
+                type: 'draw',
+                path: [{x: offsetX, y: offsetY}],
+                params: getGlobalParams(),
+                colors: getGlobalColors(),
+                stepSize: Math.max(1, parseInt(document.getElementById('p_step').value)),
+                tile: tileCanvas
+            };
+            redrawAll();
+        });
+
+        canvas.addEventListener('mousemove', function(e) {
+            if (!isDrawing) return;
+            
+            var rect = canvas.getBoundingClientRect();
+            var offsetX = e.clientX - rect.left;
+            var offsetY = e.clientY - rect.top;
+            
+            var lastPt = currentStroke.path[currentStroke.path.length - 1];
+            var dx = offsetX - lastPt.x;
+            var dy = offsetY - lastPt.y;
+            if (Math.sqrt(dx * dx + dy * dy) > 3) {
+                currentStroke.path.push({x: offsetX, y: offsetY});
+                redrawAll();
+            }
+        });
+
+        canvas.addEventListener('mouseleave', function() {
+            if (isDrawing) {
+                if (currentStroke && currentStroke.path.length > 0) {
+                    strokes.push(currentStroke);
+                }
+                currentStroke = null;
+                isDrawing = false;
+                redrawAll();
+            }
+        });
+
+        window.addEventListener('mouseup', function() { 
+            if(isDrawing && currentStroke && currentStroke.path.length > 0) {
+                strokes.push(currentStroke);
+                currentStroke = null;
+            }
+            isDrawing = false; 
+            redrawAll();
+        });
+
+        var presetStyles = [
+            { colors: ['#ffffff', '#ffffff', '#ffffff', '#1eb8b6', '#c1c7d0', '#a5f2ec'], params: { rotate: 90, line_max: 80 } },
+            { colors: ['#ffffff', '#ffffff', '#ffffff', '#3b8e53', '#9a9db5', '#fdf4ac'], params: { rotate: 0, line_max: 100 } },
+            { colors: ['#ffffff', '#ffffff', '#ffffff', '#7a8cd4', '#df7e6f', '#d5d0d6'], params: { rotate: 90, line_max: 120 } },
+            { colors: ['#ffffff', '#ffffff', '#ffffff', '#b8b2d6', '#e9ecbd', '#f4f4f4'], params: { rotate: 0, line_max: 90 } },
+            { colors: ['#ffffff', '#ffffff', '#ffffff', '#eed1d6', '#e3a995', '#e8d48e'], params: { rotate: 90, line_max: 95 } },
+            { colors: ['#ffffff', '#ffffff', '#ffffff', '#9a9db5', '#fdf5b0', '#2d884d'], params: { rotate: 90, line_max: 85 } }
+        ];
+
+        function getThumbnailDataURL(preset) {
+            var size = 40;
+            var c = document.createElement('canvas');
+            c.width = size; c.height = size;
+            var cx = c.getContext('2d');
+            var imgD = cx.createImageData(size, size);
+            var dat = imgD.data;
+            var period = Math.max(1, (preset.params.line_max || 85) / 3);
+            var cG = hexToRgb(preset.colors[3]);
+            var cGr = hexToRgb(preset.colors[4]);
+            var cY = hexToRgb(preset.colors[5]);
+            var rad = (preset.params.rotate || 0) * Math.PI / 180;
+            var cosT = Math.cos(rad);
+            var sinT = Math.sin(rad);
+
+            for(var y = 0; y < size; y++) {
+                for(var x = 0; x < size; x++) {
+                    var d = x * sinT + y * cosT;
+                    var phase = ((d % period) + period) % period / period;
+                    var ditherVal = (bayer[y % 4][x % 4] / 16.0) - 0.5;
+                    var finalPhase = phase + (ditherVal * 0.25); 
+                    if (finalPhase < 0) finalPhase += 1;
+                    if (finalPhase >= 1) finalPhase -= 1;
+                    var col = cG;
+                    
+                    if (finalPhase < 0.20) col = cG;
+                    else if (finalPhase < 0.75) col = cGr; 
+                    else if (finalPhase < 0.81) col = cY;  
+                    else col = cG;
+                    
+                    var pIdx = (y * size + x) * 4;
+                    dat[pIdx] = col[0]; dat[pIdx+1] = col[1]; dat[pIdx+2] = col[2]; dat[pIdx+3] = 255;
+                }
+            }
+            cx.putImageData(imgD, 0, 0);
+            return c.toDataURL();
+        }
+
+        var presetGallery = document.getElementById('preset_gallery');
+        presetStyles.forEach(function(preset, index) {
+            var thumb = document.createElement('div');
+            thumb.className = 'preset-thumb';
+            thumb.title = '应用样式 ' + (index + 1);
+            thumb.style.backgroundImage = 'url(' + getThumbnailDataURL(preset) + ')';
+            
+            thumb.addEventListener('click', function() {
+                var colorIds = ['bg', '1', '2', '3', '4', '5'];
+                colorIds.forEach(function(id, idx) {
+                    var col = preset.colors[idx];
+                    document.getElementById('c_' + id).value = col;
+                    document.getElementById('t_' + id).value = col;
+                });
+                for (var p in preset.params) {
+                    if (preset.params.hasOwnProperty(p)) {
+                        var el = document.getElementById('p_' + p);
+                        if (el) {
+                            el.value = preset.params[p];
+                            el.nextElementSibling.textContent = preset.params[p];
+                            updateSliderTrack(el);
+                        }
+                    }
+                }
+                
+                generateTileAndRedraw();
+            });
+            presetGallery.appendChild(thumb);
+        });
+
+        // ==================== 随机图形色彩逻辑 ====================
+        document.getElementById('btn_another').addEventListener('click', function() {
+            var getMorandiPalette = function() {
+                var hslToHex = function(h, s, l) {
+                    var l_pct = l / 100;
+                    var a = (s / 100) * Math.min(l_pct, 1 - l_pct);
+                    var f = function(n) {
+                        var k = (n + h / 30) % 12;
+                        var color = l_pct - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                        var hexVal = Math.round(255 * color).toString(16);
+                        return hexVal.length === 1 ? '0' + hexVal : hexVal;
+                    };
+                    return '#' + f(0) + f(8) + f(4);
+                };
+
+                var baseHue = Math.floor(Math.random() * 360);
+                var c3 = hslToHex(baseHue, Math.floor(Math.random() * 35 + 40), Math.floor(Math.random() * 30 + 40));
+                var hue4 = (baseHue + Math.floor(Math.random() * 90 + 90)) % 360;
+                var c4 = hslToHex(hue4, Math.floor(Math.random() * 30 + 10), Math.floor(Math.random() * 20 + 60));
+                var isWarmHighlight = Math.random() > 0.5;
+                var hue5 = isWarmHighlight ? Math.floor(Math.random() * 50 + 30) : (baseHue + Math.floor(Math.random() * 60 - 30) + 360) % 360; 
+                var c5 = hslToHex(hue5, Math.floor(Math.random() * 50 + 30), Math.floor(Math.random() * 10 + 85));
+
+                return { c_3: c3, c_4: c4, c_5: c5 };
+            };
+
+            var colorGroupMap = {};
+            strokes.forEach(function(stroke) {
+                if (stroke.type === 'draw') {
+                    var key = stroke.colors.c_3 + '_' + stroke.colors.c_4 + '_' + stroke.colors.c_5;
+                    if (!colorGroupMap[key]) {
+                        colorGroupMap[key] = getMorandiPalette();
+                    }
+                }
+            });
+
+            strokes.forEach(function(stroke) {
+                if (stroke.type === 'draw') {
+                    var key = stroke.colors.c_3 + '_' + stroke.colors.c_4 + '_' + stroke.colors.c_5;
+                    var newPalette = colorGroupMap[key];
+                    if (newPalette) {
+                        stroke.colors.c_3 = newPalette.c_3;
+                        stroke.colors.c_4 = newPalette.c_4;
+                        stroke.colors.c_5 = newPalette.c_5;
+                        stroke.tile = createTile(stroke.params, stroke.colors);
+                    }
+                }
+            });
+
+            var uiPalette = getMorandiPalette();
+            var bgVal = document.getElementById('c_bg').value; 
+            var presetLikeColors = [bgVal, '#ffffff', '#ffffff', uiPalette.c_3, uiPalette.c_4, uiPalette.c_5];
+            var colorIds = ['bg', '1', '2', '3', '4', '5'];
+            colorIds.forEach(function(id, idx) {
+                var color = presetLikeColors[idx];
+                document.getElementById('c_' + id).value = color;
+                document.getElementById('t_' + id).value = color;
+            });
+
+            generateTileAndRedraw();
+        });
+
+        function undoAction() {
+            if (strokes.length > 0) {
+                strokes.pop();
+                redrawAll();
+            }
+        }
+
+        document.getElementById('btn_undo').addEventListener('click', undoAction);
+
+        window.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key && e.key.toLowerCase() === 'z') {
+                e.preventDefault(); 
+                undoAction();
+            }
+        });
+
+        document.getElementById('btn_clear').addEventListener('click', function() { 
+            strokes = []; 
+            
+            ranges.forEach(function(id) {
+                var el = document.getElementById('p_' + id);
+                if (el) {
+                    el.value = el.defaultValue;
+                    var val = el.value;
+                    el.nextElementSibling.textContent = val;
+                    updateSliderTrack(el);
+                }
+            });
+            
+            var ditherEl = document.getElementById('p_dithering');
+            if(ditherEl) ditherEl.checked = ditherEl.defaultChecked;
+
+            generateTileAndRedraw(); 
+        });
+
+        // ==================== SVG 同步、全透明无背景且【真·全矢量化代码化】（移除任何剪切蒙版） ====================
+        // 此模块应用行程长度RLE编码将像素图转录为真正可被如Adobe Illustrator编辑调节及填色的矢量多边形集合！
+        document.getElementById('btn_export_svg').addEventListener('click', function() {
+            // 【移除】了 clipPath，这样在 AI 中就不会有任何剪切蒙版限制！
+            var svgDefs = '<defs>\n';
+            var svgBody = '';
+            
+            var tileDefs = {};
+            var tileIndex = 0;
+
+            strokes.forEach(function(stroke) {
+                var s_stepSize = stroke.stepSize;
+                var s_tw = stroke.params.tw;
+                var s_th = stroke.params.th;
+                
+                // 对每一次参数完全一致的笔刷单独建立一套矢量定义符号模型，防止文件过大导致崩溃
+                var key = JSON.stringify(stroke.params) + '_' + JSON.stringify(stroke.colors);
+                var defId = tileDefs[key];
+                
+                if (!defId) {
+                    defId = 'tile_' + tileIndex++;
+                    tileDefs[key] = defId;
+                    
+                    var isDither = stroke.params.dithering;
+                    var cG = hexToRgb(stroke.colors.c_3);
+                    var cGr = hexToRgb(stroke.colors.c_4);
+                    var cY = hexToRgb(stroke.colors.c_5);
+
+                    var seedOffset = (stroke.params.seed - 1) / 999.0;
+                    var lineMinRatio = (stroke.params.line_min - 1) / 99.0; 
+                    var T1 = 0.20 + lineMinRatio * 0.40;
+                    var T2 = Math.min(T1 + 0.55, 0.95);
+                    var T3 = Math.min(T2 + 0.06, 0.99);
+
+                    var bwMinRatio = stroke.params.bw_min / 255.0;
+                    var bwMaxRatio = stroke.params.bw_max / 255.0;
+                    if (bwMaxRatio <= bwMinRatio) bwMaxRatio = bwMinRatio + 0.001; 
+
+                    var baseMin = 114.0 / 255.0;
+                    var baseMax = 233.0 / 255.0;
+
+                    var renderW = isDither ? Math.ceil(stroke.params.tw / stroke.params.pixelSize) : stroke.params.tw;
+                    var renderH = isDither ? Math.ceil(stroke.params.th / stroke.params.pixelSize) : stroke.params.th;
+
+                    // 解析缩放映射实现完美一比一
+                    var scaleX = stroke.params.tw / renderW;
+                    var scaleY = stroke.params.th / renderH;
+
+                    var period = Math.max(1, stroke.params.line_max / stroke.params.pixelSize); 
+                    var ditherSpread = isDither ? 0.25 : 0;
+                    var rad = stroke.params.rotate * Math.PI / 180;
+                    var cosT = Math.cos(rad);
+                    var sinT = Math.sin(rad);
+
+                    var defStr = '<g id="' + defId + '">\n';
+                    defStr += '<g transform="scale(' + scaleX + ', ' + scaleY + ')">\n';
+                    
+                    var rects = [];
+                    // RLE（运行长度像素压缩算法）：水平将同色的区块合并为一行绘制，极大减少对象量以支持Illustrator流畅打开
+                    for(var y = 0; y < renderH; y++) {
+                        var startX = 0;
+                        var currentColor = null;
+                        
+                        for(var x = 0; x < renderW; x++) {
+                            var mathX = isDither ? x : x / stroke.params.pixelSize;
+                            var mathY = isDither ? y : y / stroke.params.pixelSize;
+                            var d = mathX * sinT + mathY * cosT;
+                            
+                            var phase = ((d % period) + period) % period / period;
+                            phase = (phase + seedOffset) % 1.0;
+                            phase = (phase * (baseMax - baseMin) + baseMin - bwMinRatio) / (bwMaxRatio - bwMinRatio);
+                            phase = Math.max(0, Math.min(1, phase));
+
+                            var r, g, b;
+                            if (!isDither) {
+                                var AA_W = 0.75 / period / stroke.params.pixelSize; 
+                                AA_W = Math.min(AA_W, 0.04); 
+                                
+                                if (phase < T1 - AA_W) { 
+                                    r = cG[0]; g = cG[1]; b = cG[2]; 
+                                } else if (phase < T1 + AA_W) {
+                                    var t1 = (phase - (T1 - AA_W)) / (AA_W * 2);
+                                    var c1_lerp = lerpColor(cG, cGr, t1);
+                                    r = Math.round(c1_lerp[0]); g = Math.round(c1_lerp[1]); b = Math.round(c1_lerp[2]);
+                                } else if (phase < T2 - AA_W) { 
+                                    r = cGr[0]; g = cGr[1]; b = cGr[2]; 
+                                } else if (phase < T2 + AA_W) {
+                                    var t2 = (phase - (T2 - AA_W)) / (AA_W * 2);
+                                    var c2_lerp = lerpColor(cGr, cY, t2);
+                                    r = Math.round(c2_lerp[0]); g = Math.round(c2_lerp[1]); b = Math.round(c2_lerp[2]);
+                                } else if (phase < T3 - AA_W) { 
+                                    r = cY[0]; g = cY[1]; b = cY[2]; 
+                                } else if (phase < T3 + AA_W) {
+                                    var t3 = (phase - (T3 - AA_W)) / (AA_W * 2);
+                                    var c3_lerp = lerpColor(cY, cG, t3);
+                                    r = Math.round(c3_lerp[0]); g = Math.round(c3_lerp[1]); b = Math.round(c3_lerp[2]);
+                                } else { 
+                                    r = cG[0]; g = cG[1]; b = cG[2];
+                                }
+                            } else {
+                                var ditherVal = (bayer[y % 4][x % 4] / 16.0) - 0.5;
+                                var finalPhase = phase + (ditherVal * ditherSpread);
+                                
+                                if (finalPhase < 0) finalPhase += 1;
+                                if (finalPhase >= 1) finalPhase -= 1;
+
+                                var col = cG;
+                                if (finalPhase < T1) col = cG;       
+                                else if (finalPhase < T2) col = cGr; 
+                                else if (finalPhase < T3) col = cY;  
+                                else col = cG;                         
+
+                                r = col[0]; g = col[1]; b = col[2];
+                            }
+                            
+                            var colorStr = 'rgb(' + r + ',' + g + ',' + b + ')';
+                            
+                            if (currentColor === null) {
+                                currentColor = colorStr;
+                                startX = x;
+                            } else if (currentColor !== colorStr) {
+                                var rectW = x - startX;
+                                // 增加 0.3 微小容差以消除SVG图形在渲染中可能出现的反锯齿网格裂纹缝隙
+                                rects.push('<rect x="' + startX + '" y="' + y + '" width="' + (rectW + 0.3) + '" height="1.3" fill="' + currentColor + '" />');
+                                currentColor = colorStr;
+                                startX = x;
+                            }
+                        }
+                        if (currentColor !== null) {
+                            var endRectW = renderW - startX;
+                            rects.push('<rect x="' + startX + '" y="' + y + '" width="' + (endRectW + 0.3) + '" height="1.3" fill="' + currentColor + '" />');
+                        }
+                    }
+                    
+                    defStr += rects.join('\n');
+                    defStr += '\n</g>\n</g>\n';
+                    svgDefs += defStr;
+                }
+
+                var points = getStampedPoints(stroke.path, s_stepSize);
+                points.forEach(function(pt) {
+                    var drawX = Math.floor(pt.x - s_tw/2);
+                    var drawY = Math.floor(pt.y - s_th/2);
+                    
+                    if (stroke.type !== 'erase') {
+                        // 利用use实现模型复用和调用，提升可编辑度
+                        svgBody += '<use xlink:href="#' + defId + '" href="#' + defId + '" x="' + drawX + '" y="' + drawY + '" />\n';
+                    }
+                });
+            });
+            
+            svgDefs += '</defs>\n';
+            
+            var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + canvas.width + '" height="' + canvas.height + '" viewBox="0 0 ' + canvas.width + ' ' + canvas.height + '">\n' + svgDefs + svgBody + '</svg>';
+            
+            var blob = new Blob([svg], {type: 'image/svg+xml'});
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.download = 'Strata_Brush_Vector.svg';
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // ==================== JPG / PNG 100% 同步且无损放大导出逻辑 ====================
+        function exportHighRes(type) {
+            var targetArea = 3508 * 4960;
+            var currentArea = canvas.width * canvas.height;
+            var scale = Math.sqrt(targetArea / currentArea);
+            if (scale < 1) scale = 1;
+
+            var exportCanvas = document.createElement('canvas');
+            exportCanvas.width = Math.floor(canvas.width * scale);
+            exportCanvas.height = Math.floor(canvas.height * scale);
+            
+            var exportCtx = exportCanvas.getContext('2d', { alpha: true }); 
+            var bgColor = document.getElementById('c_bg').value || "#ffffff";
+
+            exportCtx.imageSmoothingEnabled = false;
+            exportCtx.webkitImageSmoothingEnabled = false;
+            exportCtx.mozImageSmoothingEnabled = false;
+            exportCtx.msImageSmoothingEnabled = false;
+
+            if (type === 'image/jpeg') {
+                exportCtx.fillStyle = bgColor;
+                exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+            }
+
+            exportCtx.drawImage(strokeLayer, 0, 0, exportCanvas.width, exportCanvas.height);
+
+            exportCanvas.toBlob(function(blob) {
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.download = type === 'image/jpeg' ? 'Strata_Brush.jpg' : 'Strata_Brush.png';
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+            }, type, 1.0);
+        }
+
+        document.getElementById('btn_export_jpg').addEventListener('click', function() {
+            exportHighRes('image/jpeg');
+        });
+
+        document.getElementById('btn_export_png').addEventListener('click', function() {
+            exportHighRes('image/png');
+        });
+
+        resizeCanvas();
+        generateTileAndRedraw();
+
+    </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
